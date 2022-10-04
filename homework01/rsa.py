@@ -14,7 +14,7 @@ def is_prime(n: int) -> bool:
     False
     """
     # PUT YOUR CODE HERE
-    pass
+    return n > 1 and all(n % i != 0 for i in range(2, int(n**0.5) + 1))
 
 
 def gcd(a: int, b: int) -> int:
@@ -27,6 +27,12 @@ def gcd(a: int, b: int) -> int:
     1
     """
     # PUT YOUR CODE HERE
+    while a != 0 and b != 0:
+        if a >= b:
+            a %= b
+        else:
+            a %= b
+    return a or b
     pass
 
 
@@ -39,7 +45,12 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     23
     """
     # PUT YOUR CODE HERE
-    pass
+    def gcd_extended(a, b):
+        if a == 0:
+            return b, 0, 1
+        else:
+            d, x, y = gcd_extended(b % a, a)
+            return d, x - (b // a) * y, y
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
@@ -68,7 +79,7 @@ def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[in
 
     # Return public and private keypair
     # Public key is (e, n) and private key is (d, n)
-    return ((e, n), (d, n))
+    return (e, n), (d, n)
 
 
 def encrypt(pk: tp.Tuple[int, int], plaintext: str) -> tp.List[int]:
