@@ -48,4 +48,3 @@ def caesar_breaker_brute_force(ciphertext: str, dictionary: tp.Set[str]) -> int:
         else:
             best_shift += 1
     return best_shift
-
