@@ -3,14 +3,14 @@ import typing as tp
 
 def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
     ciphertext = ""
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     alphabet_low = alphabet.lower()
 
     for i in plaintext:
         if i in alphabet:
-            ciphertext += alphabet[alphabet.find(i) + shift]
+            ciphertext += alphabet[(alphabet.find(i) + shift) % 26]
         elif i in alphabet_low:
-            ciphertext += alphabet_low[alphabet_low.find(i) + shift]
+            ciphertext += alphabet_low[(alphabet_low.find(i) + shift) % 26]
         else:
             ciphertext += i
 
@@ -18,15 +18,15 @@ def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
 
 
 def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     alphabet_low = alphabet.lower()
     plaintext = ""
 
     for i in ciphertext:
         if i in alphabet:
-            plaintext += alphabet[alphabet.find(i) - shift]
+            plaintext += alphabet[(alphabet.find(i) - shift) % 26]
         elif i in alphabet_low:
-            plaintext += alphabet_low[alphabet_low.find(i) - shift]
+            plaintext += alphabet_low[(alphabet_low.find(i) - shift) % 26]
         else:
             plaintext += i
 
