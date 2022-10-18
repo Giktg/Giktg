@@ -198,16 +198,15 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     """
     if N > 9 * 9:
         N = 9 * 9
-    new_grid = solve([["." for x in range(9)] for y in range(9)])
+    new_grid = solve([["." for _ in range(9)] for _ in range(9)])
     deleted_values = 0
     while N + deleted_values < 81:
-        rcol = random.randint(0, 8)
-        rrow = random.randint(0, 8)
+        random_col = random.randint(0, 8)
+        random_row = random.randint(0, 8)
         if new_grid is not None:
-            if new_grid[rcol][rrow] != ".":
-                new_grid[rcol][rrow] = "."
+            if new_grid[random_col][random_row] != ".":
+                new_grid[random_col][random_row] = "."
                 deleted_values += 1
-    new_grid = new_grid[0]
     return new_grid
 
 
