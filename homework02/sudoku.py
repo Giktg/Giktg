@@ -207,7 +207,8 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
             if new_grid[rcol][rrow] != ".":
                 new_grid[rcol][rrow] = "."
                 deleted_values += 1
-    return new_grid # type: ignore
+    new_grid = list(new_grid)
+    return new_grid
 
 
 if __name__ == "__main__":
