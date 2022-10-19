@@ -211,14 +211,14 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     #             deleted_values += 1
     # return new_grid
     if grid is not None:
-        k_empty = 81 - min(81, N)
+        N = 81 - min(81, N)
 
-    while k_empty != 0:
+    while N != 0:
         row = random.randint(0, 8)
         col = random.randint(0, 8)
         if grid[row][col] != ".":
             grid[row][col] = "."
-            k_empty -= 1
+            N -= 1
             return grid
         else:
             return []
