@@ -196,20 +196,6 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     >>> check_solution(solution)
     True
     """
-    # if grid is None:
-    #     return
-    # if N > 9 * 9:
-    #     N = 9 * 9
-    # new_grid = solve([["." for _ in range(9)] for _ in range(9)])
-    # deleted_values = 0
-    # while N + deleted_values < 81:
-    #     random_col = random.randint(0, 8)
-    #     random_row = random.randint(0, 8)
-    #     if new_grid is not None:
-    #         if new_grid[random_col][random_row] != ".":
-    #             new_grid[random_col][random_row] = "."
-    #             deleted_values += 1
-    # return new_grid
     if grid is not None:
         N = 81 - min(81, N)
 
@@ -222,7 +208,7 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
             return grid
         else:
             return []
-    return None
+
 
 
 if __name__ == "__main__":
