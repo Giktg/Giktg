@@ -175,39 +175,33 @@ def check_solution(solution: tp.List[tp.List[str]]) -> bool:
 
 
 def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
-    """Генерация судоку заполненного на N элементов
+    """Генерация судоку заполненного на N элементов"""
+    empty_sudoku = [["." for _ in range(9)] for _ in range(9)]
+    if N == 0:
+        return empty_sudoku
 
-    >>> grid = generate_sudoku(40)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    41
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    >>> grid = generate_sudoku(1000)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    0
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    >>> grid = generate_sudoku(0)
-    >>> sum(1 for row in grid for e in row if e == '.')
-    81
-    >>> solution = solve(grid)
-    >>> check_solution(solution)
-    True
-    """
-    if grid is not None:
-        N = 81 - min(81, N)
+    sudoku = solve(grid=empty_sudoku)
+    if sudoku is None:
+        return empty_sudoku
 
-    while N != 0:
-        row = random.randint(0, 8)
-        col = random.randint(0, 8)
-        if grid[row][col] != ".":
-            grid[row][col] = "."
-            N -= 1
-            return grid
-        else:
-            return []
+    field_square_size = 9 * 9
+    if N > field_square_size:
+        return sudoku
+
+    free_position_count = field_square_size - N
+    while free_position_count != 0:
+        row_index_position, col_index_position = (
+            random.randint(0, 8),
+            random.randint(0, 8),
+        )
+
+        if sudoku[row_index_position][col_index_position] == ".":
+            continue
+
+        sudoku[row_index_position][col_index_position] = "."
+        free_position_count -= 1
+
+    return sudoku
 
 
 if __name__ == "__main__":
