@@ -215,13 +215,13 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
 
     while k_empty != 0:
         row = random.randint(0, 8)
-    col = random.randint(0, 8)
-    if grid[row][col] != ".":
-        grid[row][col] = "."
-    k_empty -= 1
-    return grid
-    else:
-    return []
+        col = random.randint(0, 8)
+        if grid[row][col] != ".":
+            grid[row][col] = "."
+            k_empty -= 1
+            return grid
+        else:
+            return []
 
 
 if __name__ == "__main__":
