@@ -222,6 +222,7 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
             return grid
         else:
             return []
+    return None
 
 
 if __name__ == "__main__":
