@@ -196,6 +196,8 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     >>> check_solution(solution)
     True
     """
+    if grid is None:
+        return
     if N > 9 * 9:
         N = 9 * 9
     new_grid = solve([["." for _ in range(9)] for _ in range(9)])
