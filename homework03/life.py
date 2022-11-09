@@ -54,7 +54,9 @@ class GameOfLife:
         return m
 
     def get_next_generation(self) -> Grid:
-        grid = [[0] * len(self.curr_generation[0]) for _ in range(len(self.curr_generation))]
+        grid = [
+            [0] * len(self.curr_generation[0]) for _ in range(len(self.curr_generation))
+        ]
         for i in range(len(self.curr_generation)):
             for j in range(len(self.curr_generation[0])):
                 n = self.get_neighbours((i, j)).count(1)
