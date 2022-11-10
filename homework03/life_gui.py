@@ -9,13 +9,14 @@ from pygame.locals import *
 Cell = tp.Tuple[int, int]
 Cells = tp.List[int]
 Grid = tp.List[Cells]
+Past = tp.List[any]
 
 
 class GameOfLife:
     def __init__(
         self, width: int = 640, height: int = 480, cell_size: int = 10, speed: int = 10
     ) -> None:
-        self.past = Grid
+        self.past = Past
         self.width = width
         self.height = height
         self.cell_size = cell_size
