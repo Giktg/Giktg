@@ -13,7 +13,7 @@ Grid = tp.List[Cells]
 
 class GameOfLife:
     def __init__(
-            self, width: int = 640, height: int = 480, cell_size: int = 10, speed: int = 10
+        self, width: int = 640, height: int = 480, cell_size: int = 10, speed: int = 10
     ) -> None:
         self.past = ""
         self.width = width
@@ -130,14 +130,14 @@ class GameOfLife:
         """
         m = []
         for i, j in (
-                (-1, -1),
-                (-1, 0),
-                (-1, 1),
-                (0, -1),
-                (0, 1),
-                (1, -1),
-                (1, 0),
-                (1, 1),
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
         ):
             if cell[0] + i >= 0 and cell[1] + j >= 0:
                 try:
