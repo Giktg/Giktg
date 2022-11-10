@@ -50,7 +50,7 @@ class GameOfLife:
         pause = True
         while running:
             for event in pygame.event.get():
-                if event.type == QUIT:
+                if event.type == 256:
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
