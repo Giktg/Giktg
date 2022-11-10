@@ -2,50 +2,42 @@ import typing as tp
 
 
 def encrypt_caesar(plaintext: str, shift: int = 3) -> str:
-    """
-    Encrypts plaintext using a Caesar cipher.
-
-    >>> encrypt_caesar("PYTHON")
-    'SBWKRQ'
-    >>> encrypt_caesar("python")
-    'sbwkrq'
-    >>> encrypt_caesar("Python3.6")
-    'Sbwkrq3.6'
-    >>> encrypt_caesar("")
-    ''
-    """
     ciphertext = ""
-    # PUT YOUR CODE HERE
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    alphabet_low = alphabet.lower()
+
+    for i in plaintext:
+        if i in alphabet:
+            ciphertext += alphabet[(alphabet.find(i) + shift) % 26]
+        elif i in alphabet_low:
+            ciphertext += alphabet_low[(alphabet_low.find(i) + shift) % 26]
+        else:
+            ciphertext += i
+
     return ciphertext
 
 
 def decrypt_caesar(ciphertext: str, shift: int = 3) -> str:
-    """
-    Decrypts a ciphertext using a Caesar cipher.
-
-    >>> decrypt_caesar("SBWKRQ")
-    'PYTHON'
-    >>> decrypt_caesar("sbwkrq")
-    'python'
-    >>> decrypt_caesar("Sbwkrq3.6")
-    'Python3.6'
-    >>> decrypt_caesar("")
-    ''
-    """
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    alphabet_low = alphabet.lower()
     plaintext = ""
-    # PUT YOUR CODE HERE
+
+    for i in ciphertext:
+        if i in alphabet:
+            plaintext += alphabet[(alphabet.find(i) - shift) % 26]
+        elif i in alphabet_low:
+            plaintext += alphabet_low[(alphabet_low.find(i) - shift) % 26]
+        else:
+            plaintext += i
+
     return plaintext
 
 
 def caesar_breaker_brute_force(ciphertext: str, dictionary: tp.Set[str]) -> int:
-    """
-    Brute force breaking a Caesar cipher.
-    """
     best_shift = 0
-        while best_shift < 26:
-        if decrypt_caesar(ciphertext, best_shift) in dictionary:
-            break
-        else:
-            best_shift += 1
+    for shift in range(26):
+        l = decrypt_caesar(ciphertext, shift)
+        if l in dictionary:
+            best_shift = shift
+        break
     return best_shift
-
