@@ -69,7 +69,7 @@ class GameOfLife:
             if pause:
                 self.draw_grid()
                 self.draw_lines()
-                self.past = self.grid
+                self.past: int = self.grid
                 self.grid = self.get_next_generation()
                 pygame.display.flip()
                 clock.tick(self.speed)
