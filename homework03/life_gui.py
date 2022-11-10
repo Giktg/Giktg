@@ -9,7 +9,7 @@ from pygame.locals import *
 Cell = tp.Tuple[int, int]
 Cells = tp.List[int]
 Grid = tp.List[Cells]
-Past = tp.List[any]
+Past = tp.List[tp.Any]
 
 
 class GameOfLife:
