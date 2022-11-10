@@ -164,7 +164,7 @@ class GameOfLife:
 
     def click(self, pos: tp.Tuple[int, int]):
         self.grid[pos[0] // self.cell_size][pos[1] // self.cell_size] = (
-                1 - self.grid[pos[0] // self.cell_size][pos[1] // self.cell_size]
+            1 - self.grid[pos[0] // self.cell_size][pos[1] // self.cell_size]
         )
 
 
