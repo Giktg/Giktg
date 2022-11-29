@@ -4,7 +4,6 @@ import stat
 import time
 import typing as tp
 
-
 from pyvcs.index import GitIndexEntry, read_index
 from pyvcs.objects import hash_object
 from pyvcs.refs import get_ref, is_detached, resolve_head, update_ref
