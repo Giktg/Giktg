@@ -61,7 +61,11 @@ def cat_file(obj_name: str, pretty: bool = True) -> None:
         print(data.decode())
     else:
         for index in read_tree(data):
-            print(f"{index[0]:06}", "tree" if index[0] == 40000 else "blob", index[1] + "\t" + index[2])
+            print(
+                f"{index[0]:06}",
+                "tree" if index[0] == 40000 else "blob",
+                index[1] + "\t" + index[2]
+            )
 
 
 def find_tree_files(tree_sha: str, gitdir: pathlib.Path) -> tp.List[tp.Tuple[str, str]]:

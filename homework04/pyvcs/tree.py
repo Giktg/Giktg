@@ -52,7 +52,7 @@ def commit_tree(
 ) -> str:
     if author is None and "GIT_AUTHOR_NAME" in os.environ and "GIT_AUTHOR_EMAIL" in os.environ:
         author = (
-            str(os.getenv("GIT_AUTHOR_NAME", None) + " " + f'<{os.getenv("GIT_AUTHOR_EMAIL", None)}>'))  # type:ignore
+            os.getenv("GIT_AUTHOR_NAME", None) + " " + f'<{os.getenv("GIT_AUTHOR_EMAIL", None)}>')  # type:ignore
     now = int(time.mktime(time.localtime()))
     tz = time.timezone
     if tz > 0:
