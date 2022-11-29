@@ -64,7 +64,7 @@ def cat_file(obj_name: str, pretty: bool = True) -> None:
             print(
                 f"{index[0]:06}",
                 "tree" if index[0] == 40000 else "blob",
-                index[1] + "\t" + index[2]
+                index[1] + "\t" + index[2],
             )
 
 
