@@ -1,8 +1,9 @@
+import os
 import pathlib
 import stat
 import time
 import typing as tp
-import os
+
 
 from pyvcs.index import GitIndexEntry, read_index
 from pyvcs.objects import hash_object
