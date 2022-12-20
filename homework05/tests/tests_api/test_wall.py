@@ -3,9 +3,8 @@ import unittest
 from unittest.mock import patch
 from urllib.parse import unquote
 
-import pandas as pd
-import responses
-
+import pandas as pd  # type: ignore
+import responses  # type: ignore
 from vkapi.wall import get_wall_execute
 
 
@@ -43,7 +42,7 @@ class GetWallTestCase(unittest.TestCase):
             wall.to_dict("records"),
             msg="Вы должны сделать один запрос, чтобы узнать общее число записей",
         )
-        resp_body = unquote(responses.calls[0].request.body)
+        resp_body = unquote(responses.calls[0].request.body).replace("'", '"')
         self.assertTrue(
             '"count":"1"' in resp_body or '"count":+"1"' in resp_body,
             msg="Вы должны сделать один запрос, чтобы узнать общее число записей",
@@ -67,4 +66,6 @@ class GetWallTestCase(unittest.TestCase):
             get_posts_2500.return_value = []
             _ = get_wall_execute(domain="cs102py", count=6000)
         end = time.time()
-        self.assertGreaterEqual(end - start, 2.0, msg="Слишком много запросов в секунду")
+        self.assertGreaterEqual(
+            end - start, 2.0, msg="Слишком много запросов в секунду"
+        )
