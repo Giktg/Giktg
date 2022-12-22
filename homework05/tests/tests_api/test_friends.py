@@ -78,9 +78,7 @@ class FriendsTestCase(unittest.TestCase):
         mutual_friends = get_mutual(target_uids=list(range(300)))
         self.assertEqual(
             [
-                [{"common_count": 2, "common_friends": [2, 3], "id": 1}],
-                [{"common_count": 2, "common_friends": [1, 3], "id": 2}],
-                [{"common_count": 2, "common_friends": [1, 2], "id": 3}],
+                [{"common_count": 2, "common_friends": [2, 3], "id": 1}]
             ],
             mutual_friends,
         )
