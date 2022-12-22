@@ -17,9 +17,7 @@ class FriendsTestCase(unittest.TestCase):
             status=200,
         )
         fids = get_friends(user_id=1)
-        expected_response = FriendsResponse(
-            count=len(expected_fids), items=expected_fids
-        )
+        expected_response = FriendsResponse(count=len(expected_fids), items=expected_fids)
         self.assertEqual(expected_response, fids)
 
     @responses.activate
@@ -28,9 +26,7 @@ class FriendsTestCase(unittest.TestCase):
         target_uid = 456
         responses.add(
             responses.GET,
-            re.compile(
-                f"https://api.vk.com/method/friends.getMutual\?.*target_uid={target_uid}.*"
-            ),
+            re.compile(f"https://api.vk.com/method/friends.getMutual\?.*target_uid={target_uid}.*"),
             match_querystring=True,
             json={"response": common_friends},
             status=200,
@@ -82,9 +78,9 @@ class FriendsTestCase(unittest.TestCase):
         mutual_friends = get_mutual(target_uids=list(range(300)))
         self.assertEqual(
             [
-                [{"common_count": 2, "common_friends": [2, 3], "id": 1}],
-                [{"common_count": 2, "common_friends": [1, 3], "id": 2}],
-                [{"common_count": 2, "common_friends": [1, 2], "id": 3}],
+                {"common_count": 2, "common_friends": [2, 3], "id": 1},
+                {"common_count": 2, "common_friends": [1, 3], "id": 2},
+                {"common_count": 2, "common_friends": [1, 2], "id": 3},
             ],
             mutual_friends,
         )
@@ -102,7 +98,5 @@ class FriendsTestCase(unittest.TestCase):
         start = time.time()
         mutual_friends = get_mutual(target_uids=list(range(n_reqs * 100)))
         end = time.time()
-        self.assertGreaterEqual(
-            end - start, 1.0, msg="Слишком много запросов в секунду"
-        )
+        self.assertGreaterEqual(end - start, 1.0, msg="Слишком много запросов в секунду")
         self.assertEqual(common_friends * n_reqs, mutual_friends)
