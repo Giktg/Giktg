@@ -1,7 +1,6 @@
 import typing as tp
 
-# mypy: ignore-errors
-import requests
+import requests # mypy: ignore-errors
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry  # type: ignore
 
