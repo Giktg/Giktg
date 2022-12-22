@@ -1,17 +1,14 @@
 import typing as tp
 
-import requests
-from requests.adapters import HTTPAdapter
+import requests  # type: ignore
+from requests.adapters import HTTPAdapter  # type: ignore
 from requests.packages.urllib3.util.retry import Retry  # type: ignore
 
 
 class Session:
-    _adapter: HTTPAdapter
-    _request_session: requests.Session
-    _base_url: str
-    _timeout: float
     """
     Сессия.
+
     :param base_url: Базовый адрес, на который будут выполняться запросы.
     :param timeout: Максимальное время ожидания ответа от сервера.
     :param max_retries: Максимальное число повторных запросов.
@@ -25,28 +22,24 @@ class Session:
         max_retries: int = 3,
         backoff_factor: float = 0.3,
     ) -> None:
-        self._request_session = requests.Session()
-
-        adapter = HTTPAdapter(
-            max_retries=Retry(
-                backoff_factor=backoff_factor,
-                total=max_retries,
-                status_forcelist=[500, 502, 503, 504],
-            )
+        self.base_url = base_url
+        self.timeout = timeout
+        self.session = requests.Session()
+        self.retry_strategy = Retry(
+            total=max_retries,
+            backoff_factor=backoff_factor,
+            method_whitelist=["GET", "POST"],
+            status_forcelist=list(range(400, 600)),
         )
-        self._request_session.mount(prefix="https://", adapter=adapter)
-
-        self._timeout = timeout
-        self._base_url = base_url
+        self.adapter = HTTPAdapter(max_retries=self.retry_strategy)
+        self.session.mount(base_url, self.adapter)
 
     def get(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        full_url = f"{self._base_url}/{url}"
-        response = self._request_session.get(url=full_url, params=kwargs, timeout=self._timeout)
-
+        kwargs["timeout"] = kwargs["timeout"] if "timeout" in kwargs else self.timeout
+        response = self.session.get(self.base_url + "/" + url, *args, **kwargs)
         return response
 
     def post(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        full_url = f"{self._base_url}/{url}"
-        response = self._request_session.post(url=full_url, data=kwargs, timeout=self._timeout)
-
+        kwargs["timeout"] = kwargs["timeout"] if "timeout" in kwargs else self.timeout
+        response = self.session.post(self.base_url + "/" + url, *args, **kwargs)
         return response

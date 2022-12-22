@@ -1,43 +1,26 @@
-import math
+import textwrap
 import time
 import typing as tp
+from string import Template
 
-import pandas as pd  # type: ignore
+import pandas as pd
+from pandas import json_normalize
 from vkapi import config, session
 from vkapi.exceptions import APIError
-
-code = """
-    var query_params = %s;
-    var items = [];
-    var iterCount = 25;
-    var i = 0;
-    while (i < iterCount && query_params.count > 0) {
-        var responseItems = API.wall.get(query_params).items;
-        items.push(responseItems);
-        i = i + 1;
-        query_params.count = query_params.count - 100;
-        query_params.offset = query_params.offset + responseItems.length;
-    }
-    return items;
-"""
+from vkapi.session import Session
 
 
-def get_posts_2500(count: int = 2500, **kwargs: tp.Any) -> tp.List[tp.Dict[str, tp.Any]]:
-    kwargs["count"] = str(count)
-    code_data = code % kwargs
-    request_data = {
-        "access_token": config.VK_CONFIG["access_token"],
-        "v": config.VK_CONFIG["version"],
-        "code": code_data,
-    }
-
-    response = session.post("execute", **request_data)
-    try:
-        response_data = response.json()["response"]["items"]
-    except Exception as e:
-        raise APIError.bad_request(message=str(e))
-
-    return response_data
+def get_posts_2500(
+    owner_id: str = "",
+    domain: str = "",
+    offset: int = 0,
+    count: int = 10,
+    max_count: int = 2500,
+    filter: str = "owner",
+    extended: int = 0,
+    fields: tp.Optional[tp.List[str]] = None,
+) -> tp.Dict[str, tp.Any]:
+    return {}
 
 
 def get_wall_execute(
@@ -53,7 +36,9 @@ def get_wall_execute(
 ) -> pd.DataFrame:
     """
     Возвращает список записей со стены пользователя или сообщества.
+
     @see: https://vk.com/dev/wall.get
+
     :param owner_id: Идентификатор пользователя или сообщества, со стены которого необходимо получить записи.
     :param domain: Короткий адрес пользователя или сообщества.
     :param offset: Смещение, необходимое для выборки определенного подмножества записей.
@@ -64,33 +49,40 @@ def get_wall_execute(
     :param fields: Список дополнительных полей для профилей и сообществ, которые необходимо вернуть.
     :param progress: Callback для отображения прогресса.
     """
-    query_params = {
-        "owner_id": owner_id,
-        "domain": domain,
-        "offset": offset,
-        "filter": filter,
-        "extended": extended,
-        "fields": fields,
-        "v": "5.126",
-    }
+    start = Session(config.VK_CONFIG["domain"])
+    all_wall_posts = []
+    for k in range(((count - 1) // max_count) + 1):
+        try:
+            code = Template(
+                """var posts = []; var i = 0; while (i < $trys) {posts = posts + API.wall.get({"owner_id":$owner_id,"domain":"$domain","offset":$offset + i*100,"count":"$count","filter":"$filter","extended":$extended,"fields":'$fields',"v":$version})['items']; i=i+1;} return {'count': posts.length, 'items': posts};"""
+            ).substitute(
+                owner_id=owner_id if owner_id else 0,
+                domain=domain,
+                offset=offset + max_count * k,
+                count=count - max_count * k if count - max_count * k < 101 else 100,
+                trys=(count - max_count * k - 1) // 100 + 1
+                if count - max_count * k < max_count + 1
+                else max_count // 100,
+                filter=filter,
+                extended=extended,
+                fields=fields,
+                version=str(config.VK_CONFIG["version"]),
+            )
+            print(code)
+            wall_posts = start.post(
+                "execute",
+                data={
+                    "code": code,
+                    "access_token": config.VK_CONFIG["access_token"],
+                    "v": config.VK_CONFIG["version"],
+                },
+            )
+            print(wall_posts)
+            time.sleep(2)
 
-    wall_execute_data = []
-    iter_count = math.ceil(count / max_count)
-    i = 0
-    start = time.time()
-    while (i < iter_count) and (count > 0):
-        if count >= max_count:
-            posts_list = get_posts_2500(count=2500, **query_params)
-            wall_execute_data += posts_list
-            count -= 2500
-            query_params["offset"] += 2500  # type: ignore
-        else:
-            posts_list = get_posts_2500(count=count, kwargs=query_params)
-            wall_execute_data += posts_list
-            break
-
-        requests_delta_time = time.time() - start
-        if requests_delta_time < 1:
-            time.sleep(1 - requests_delta_time)
-            start = time.time()
-    return pd.json_normalize(wall_execute_data)
+            for one_post in wall_posts.json()["response"]["items"]:
+                all_wall_posts.append(one_post)
+            print(len(all_wall_posts))
+        except:
+            pass
+    return json_normalize(all_wall_posts)
