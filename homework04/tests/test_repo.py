@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-from pyfakefs.fake_filesystem_unittest import TestCase5
+from pyfakefs.fake_filesystem_unittest import TestCase
 from pyvcs import repo
 
 

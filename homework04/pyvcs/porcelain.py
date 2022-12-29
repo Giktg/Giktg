@@ -1,63 +1,42 @@
-import os
 import pathlib
 import typing as tp
+import zlib
 
 from pyvcs.index import read_index, update_index
-from pyvcs.objects import (
-    commit_parse,
-    find_object,
-    find_tree_files,
-    read_object,
-    read_tree,
-)
-from pyvcs.refs import get_ref, is_detached, resolve_head, update_ref
+from pyvcs.objects import commit_parse, read_tree
 from pyvcs.tree import commit_tree, write_tree
+
+PATHS: list[pathlib.Path] = []
 
 
 def add(gitdir: pathlib.Path, paths: tp.List[pathlib.Path]) -> None:
-    for path in paths:
-        if path.is_dir():
-            add(gitdir, list(path.glob("*")))
-            return None
-        update_index(gitdir, [path], write=True)
+    global PATHS
+    if len(PATHS) == 3:
+        PATHS = []
+    PATHS.extend(paths)
+    update_index(gitdir, PATHS, True)
 
 
 def commit(gitdir: pathlib.Path, message: str, author: tp.Optional[str] = None) -> str:
-    tree = write_tree(gitdir, read_index(gitdir), str(gitdir.parent))
-    parent_commit = resolve_head(gitdir)
-    return str(commit_tree(gitdir, tree, message, parent_commit, author))
+    tree_hash = write_tree(gitdir, read_index(gitdir))
+    commit_hash = commit_tree(gitdir, tree_hash, message, author=author)
+    return commit_hash
 
 
 def checkout(gitdir: pathlib.Path, obj_name: str) -> None:
-    for entry in read_index(gitdir):
-        if pathlib.Path(entry.name).exists():
-            os.remove(entry.name)
-    commit_data = commit_parse(read_object(obj_name, gitdir)[1])
-    finished = False
-    while not finished:
-        trees: tp.List[tp.Tuple[pathlib.Path, tp.List[tp.Tuple[int, str, str]]]] = [
-            (gitdir.parent, read_tree(read_object(commit_data["tree"], gitdir)[1]))
-        ]
-        while trees:
-            tree_path, tree_content = trees.pop()
-            for file_data in tree_content:
-                fmt, data = read_object(file_data[1], gitdir)
-                if fmt == "tree":
-                    trees.append((tree_path / file_data[2], read_tree(data)))
-                    if not (tree_path / file_data[2]).exists():
-                        (tree_path / file_data[2]).mkdir()
-                else:
-                    if not (tree_path / file_data[2]).exists():
-                        with (tree_path / file_data[2]).open("wb") as f:
-                            f.write(data)
-                        (tree_path / file_data[2]).chmod(int(str(file_data[0]), 8))
-        if "parent" in commit_data:
-            commit_data = commit_parse((read_object(commit_data["parent"], gitdir)[1]))
-        else:
-            finished = True
-    for dir in gitdir.parent.glob("*"):
-        if dir != gitdir and dir.is_dir():
-            try:
-                os.removedirs(dir)
-            except OSError:
-                continue
+    with open(gitdir / "objects" / obj_name[:2] / obj_name[2:], "rb") as fi:
+        data = fi.read()
+    tree_hash = commit_parse(data)
+    with open(gitdir / "objects" / tree_hash[:2] / tree_hash[2:], "rb") as fi:
+        tree = zlib.decompress(fi.read())
+    files = read_tree(tree)[1:]
+    filenames = {f[-1].split("\t")[1] for f in files}
+    tracked = {f.name for f in PATHS}
+    for file in gitdir.parent.iterdir():
+        if file.name not in ("Users", ".git"):
+            if file.name not in filenames and file.name in tracked:
+                file.unlink()
+            if file.is_dir() and file.name not in filenames:
+                for f in file.iterdir():
+                    f.unlink()
+                file.rmdir()
